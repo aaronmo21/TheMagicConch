@@ -1,4 +1,4 @@
-# RespondsWithNo/bots/config.py
+# MagicConchBot/bots/config.py
 import tweepy
 import logging
 import os
