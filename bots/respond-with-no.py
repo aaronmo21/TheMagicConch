@@ -5,6 +5,7 @@ import tweepy
 import logging
 import time
 import os
+import random
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
@@ -27,6 +28,14 @@ def create_api():
     logger.info("API created")
     return api
 
+def pick_response():
+    responses = ["no.", "try asking again.", "nOoOoo.", "Maybe someday.", "I don't think so.", "yes."]
+    length = len(responses)
+    random_number = random.randint(0, length)
+    response = responses[random_number]
+    logger.info(response)
+    return response
+
 def check_mentions(api, since_id):
     if type(since_id) is not int:
         since_id = int(since_id)
@@ -35,14 +44,18 @@ def check_mentions(api, since_id):
     for tweet in tweepy.Cursor(api.mentions_timeline,
         since_id=since_id).items():
         new_since_id = max(tweet.id, new_since_id)
-        logger.info(f"Answering to {tweet.user.name}")
-        logger.info(tweet.id)
 
-        api.update_status(
-            status="no.",
-            in_reply_to_status_id=tweet.id,
-            auto_populate_reply_metadata=True
-        )
+        key = "?"
+        if any(keyword in tweet.text.lower() for keyword in key):
+            logger.info(f"Answering to {tweet.user.name}")
+            logger.info(tweet.id)
+
+            status = pick_response()
+            api.update_status(
+                status=status,
+                in_reply_to_status_id=tweet.id,
+                auto_populate_reply_metadata=True
+            )
 
     f = open("lastTweet.txt","w")
     new_since_id = str(new_since_id)
