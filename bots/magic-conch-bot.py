@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-#MagicConchBot/bots/magic-conch-bot.py
+# MagicConchBot/bots/magic-conch-bot.py
 
 import tweepy
 import logging
@@ -10,6 +10,7 @@ import random
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 
+
 def create_api():
     consumer_key = "EuikJ7SURGxvAgqVnqbMe7lp6"
     consumer_secret = "8fvhb5cBL0KJ3qNqwEX5P8s4YKAL0xlLiq8eBooiWy8tePJxjV"
@@ -18,8 +19,8 @@ def create_api():
 
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
     auth.set_access_token(access_token, access_token_secret)
-    api = tweepy.API(auth, wait_on_rate_limit=True, 
-    wait_on_rate_limit_notify=True)
+    api = tweepy.API(auth, wait_on_rate_limit=True,
+                     wait_on_rate_limit_notify=True)
     try:
         api.verify_credentials()
     except Exception as e:
@@ -28,13 +29,16 @@ def create_api():
     logger.info("API created")
     return api
 
+
 def pick_response():
-    responses = ["no.", "try asking again.", "nOoOoo.", "Maybe someday.", "I don't think so.", "yes."]
+    responses = ["no.", "try asking again.", "nOoOoo.",
+                 "Maybe someday.", "I don't think so.", "yes."]
     length = len(responses)
     random_number = random.randint(0, length)
     response = responses[random_number]
     logger.info(response)
     return response
+
 
 def check_mentions(api, since_id):
     if type(since_id) is not int:
@@ -42,7 +46,7 @@ def check_mentions(api, since_id):
     logger.info("Retrieving mentions")
     new_since_id = since_id
     for tweet in tweepy.Cursor(api.mentions_timeline,
-        since_id=since_id).items():
+                               since_id=since_id).items():
         new_since_id = max(tweet.id, new_since_id)
 
         key = "?"
@@ -57,16 +61,17 @@ def check_mentions(api, since_id):
                 auto_populate_reply_metadata=True
             )
 
-    f = open("lastTweet.txt","w")
+    f = open("lastTweet.txt", "w")
     new_since_id = str(new_since_id)
     f.write(new_since_id)
     f.close()
 
     return new_since_id
 
+
 def main():
     api = create_api()
-    f = open("lastTweet.txt","r")
+    f = open("lastTweet.txt", "r")
     lastTweet = int(f.readline())
     f.close()
     since_id = lastTweet
@@ -74,6 +79,7 @@ def main():
         since_id = check_mentions(api, since_id)
         logger.info("Waiting...")
         time.sleep(10)
+
 
 if __name__ == "__main__":
     main()
